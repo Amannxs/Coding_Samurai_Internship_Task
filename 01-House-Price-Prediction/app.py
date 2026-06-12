@@ -33,20 +33,25 @@ col1, col2 = st.columns([1, 1])
 
 with col1:
     st.subheader("📐 Dimensions & Layout")
-    area = st.number_input("Total Area (sq ft)", min_value=300, max_value=10000, value=1800, step=50)
-    bedrooms = st.slider("Bedrooms", min_value=1, max_value=8, value=3)
-    bathrooms = st.slider("Bathrooms", min_value=1, max_value=6, value=2)
-    floors = st.slider("Total Floors", min_value=1, max_value=4, value=1)
+    area_sqft = st.number_input("Area (sq ft)", min_value=100, max_value=10000, value=1500)
+    lot_sqft = st.number_input("Lot Size (sq ft)", min_value=100, max_value=50000, value=2000)
+    bedrooms = st.slider("Bedrooms", min_value=1, max_value=10, value=3)
+    bathrooms = st.slider("Bathrooms", min_value=1, max_value=8, value=2)
+    floors = st.slider("Total Floors", min_value=1, max_value=5, value=1)
 
 with col2:
-    st.subheader("📍 Location & Quality")
-    year_built = st.number_input("Year Built", min_value=1800, max_value=2026, value=2018, step=1)
-    condition = st.slider("Overall Condition Rating", min_value=1, max_value=5, value=3)
+    st.subheader("📍 Location & Features")
+    year_built = st.number_input("Year Built", min_value=1800, max_value=2026, value=2015)
+    garage_spaces = st.slider("Garage Spaces", min_value=0, max_value=5, value=1)
     
-    # Categorical fields matching your dataset's exact string categories
-    location = st.selectbox("Location Setting", ["Urban", "Suburb", "Rural"])
-    garage = st.selectbox("Does it have a Garage?", ["Yes", "No"])
-
+    # Checkboxes for Booleans
+    has_garden = st.checkbox("Has Garden?")
+    has_pool = st.checkbox("Has Pool?")
+    
+    # Text/Categorical Inputs (Replace options with actual values from your dataset)
+    city = st.selectbox("City", ["City A", "City B", "City C"]) 
+    neighborhood = st.selectbox("Neighborhood", ["Net A", "Net B"])
+    property_type = st.selectbox("Property Type", ["House", "Apartment", "Condo"])
 st.write("---")
 
 # 4. Prediction Execution Trigger
