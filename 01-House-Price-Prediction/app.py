@@ -55,27 +55,33 @@ with col2:
 st.write("---")
 
 # 4. Prediction Execution Trigger
+# 4. Prediction Execution Trigger
 if st.button("💰 Calculate Estimated Market Value", type="primary", use_container_width=True):
     
-    # A. Preprocess Categorical Fields to match your Notebook
-    # Map Garage string to binary numeric
-    garage_mapped = 1 if garage == "Yes" else 0
+    # A. Map binary/boolean features to 1 and 0
+    garden_mapped = 1 if has_garden else 0
+    pool_mapped = 1 if has_pool else 0
     
-    # Manually match your exact One-Hot encoding array shape
-    # Adjust flags depending on whether your pipeline generated 2 or 3 binary columns for Location
-    is_suburb = 1 if location == "Suburb" else 0
-    is_urban = 1 if location == "Urban" else 0
+    # B. Map your categories to numeric values (matching your notebook's label encoding)
+    # Temporary maps matching typical label encodings (adjust numbers if your notebook used specific values)
+    city_map = {"City A": 0, "City B": 1, "City C": 2}
+    neighborhood_map = {"Net A": 0, "Net B": 1}
+    property_map = {"House": 0, "Apartment": 1, "Condo": 2}
     
-    # B. Assemble the Numerical Vector for the Scaler
-    # Must be in the precise original order your notebook fed into StandardScaler
-    raw_numerical_features = np.array([[area, bedrooms, bathrooms, floors, year_built, condition, garage_mapped]])
+    city_encoded = city_map.get(city, 0)
+    neighborhood_encoded = neighborhood_map.get(neighborhood, 0)
+    property_encoded = property_map.get(property_type, 0)
+
+    # C. Assemble the vector in the EXACT order your notebook processed columns:
+    # city, neighborhood, property_type, bedrooms, bathrooms, area_sqft, lot_sqft, year_built, garage_spaces, has_garden, has_pool, floors
+    raw_features = np.array([[
+        city_encoded, neighborhood_encoded, property_encoded,
+        bedrooms, bathrooms, area_sqft, lot_sqft, year_built, 
+        garage_spaces, garden_mapped, pool_mapped, floors
+    ]])
     
-    # C. Transform using the saved scaler weights
-    scaled_numerical = scaler.transform(raw_numerical_features)
-    
-    # D. Reconstruct the full 11-column matching matrix (Scaled numericals + encoded locations)
-    # This aligns perfectly with your training data's structural layout
-    final_features = np.append(scaled_numerical, [[is_suburb, is_urban]], axis=1)
+    # D. Transform your features using your saved scaler weights
+    final_features = scaler.transform(raw_features)
     
     # E. Run Prediction Engine
     estimated_price = model.predict(final_features)
