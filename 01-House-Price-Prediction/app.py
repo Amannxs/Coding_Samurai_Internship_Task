@@ -13,9 +13,9 @@ st.set_page_config(
 # 1. Load the exported model and scaler safely (Configured for Streamlit Cloud paths)
 @st.cache_resource
 def load_ml_components():
-    with open('/01-House-Price-Prediction/lr_model.pkl', 'rb') as f:
+    with open('01-House-Price-Prediction/lr_model.pkl', 'rb') as f:
         model = pickle.load(f)
-    with open('/01-House-Price-Prediction/scaler.pkl', 'rb') as f:
+    with open('01-House-Price-Prediction/scaler.pkl', 'rb') as f:
         scaler = pickle.load(f)
     return model, scaler
 
