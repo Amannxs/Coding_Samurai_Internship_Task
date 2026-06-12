@@ -11,11 +11,13 @@ st.set_page_config(
 )
 
 # 1. Load the exported model and scaler safely
+# 1. Load the exported model and scaler safely with correct folder paths
 @st.cache_resource
 def load_ml_components():
-    with open('lr_model.pkl', 'rb') as f:
+    # Added folder prefix so Streamlit Cloud can find the files
+    with open('01-House-Price-Prediction/lr_model.pkl', 'rb') as f:
         model = pickle.load(f)
-    with open('scaler.pkl', 'rb') as f:
+    with open('01-House-Price-Prediction/scaler.pkl', 'rb') as f:
         scaler = pickle.load(f)
     return model, scaler
 
