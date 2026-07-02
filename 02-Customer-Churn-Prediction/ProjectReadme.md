@@ -1,50 +1,54 @@
-# Telecom Customer Churn Prediction Dashboard
+Elecom Customer Churn Prediction Dashboard
+A complete machine learning pipeline with a local Streamlit dashboard for predicting customer churn risk. The model uses LightGBM and was trained on over 440,000 subscriber records.
 
-This repository contains the end-to-end machine learning pipeline and local Streamlit deployment code for predicting customer churn risk. The core engine is built using LightGBM and achieves highly robust classification bounds on a dense dataset containing over 440,000 subscriber records.
+What I Ran Into While Building This
+Working through the development in Kaggle, I hit a few snags that needed sorting out:
 
----
+The Pipeline Error
+Early on, I kept getting a NameError: name 'pipeline' is not defined when trying to run .fit() in my validation code. Turned out I hadn't actually initialized the Scikit-Learn Pipeline that combined my preprocessor and the LGBMClassifier. Once I wrapped everything together properly, it started working.
 
-## 🛠️ Dev Log: What We Tackled & Solved
+Handling Mixed Data Types
+The raw telecom data had a mix of text and numbers - things like Gender, Contract Length, and Subscription Type were all strings. Instead of letting the model guess how to handle them, I created simple mapping dictionaries (contract_mapping, sub_mapping, gender_mapping) to convert these into meaningful numbers. For example, Monthly contracts became 1, Annual became 12 - this made more sense for the tree-based model than random category codes.
 
-During the implementation phases inside our Kaggle environment, we ran into a couple of workflow errors and design choices that we successfully resolved:
+Training and Validation
+I started with a stratified 80/20 split to get initial performance metrics. The model performed really well (hit 1.00 Precision/Recall on the test set). After confirming it worked, I retrained on the full dataset (all 440,832 rows) to squeeze out every bit of pattern recognition before deployment.
 
-### 1. The Missing Pipeline Object (`NameError`)
-* **The Bug:** While testing early cells, we threw a `NameError: name 'pipeline' is not defined` when trying to call `.fit()` inside the validation blocks. 
-* **The Fix:** We realized the structural `Pipeline` combining our `ColumnTransformer` preprocessor and the `LGBMClassifier` wasn't explicitly initialized in the preceding workspace cells. We cleanly integrated Scikit-Learn's `Pipeline` wrapper to pack both scaling and model constraints together before triggering structural data loops.
+Getting the Model Out of Kaggle
+Instead of fighting with Kaggle's file system, I used joblib.dump() to save the trained model as final_customer_churn_model.pkl, then used from IPython.display import FileLink to generate a direct download link right in the notebook cell. Made it super easy to grab the file for local use.
 
-### 2. Manual Encoding and Feature Scaling Mismatch
-* **The Problem:** The initial raw telecom dataset included mixed datatypes such as string categoricals for `Gender`, `Contract Length`, and `Subscription Type`. Standard numeric estimators require direct arithmetic representations.
-* **The Fix:** We built explicit manual dictionaries (`contract_mapping`, `sub_mapping`, `gender_mapping`) to systematically transfigure columns into meaningful numeric steps (e.g., mapping Monthly contracts to 1, Annual to 12) rather than random categorical hashes. This kept feature evaluation mathematically sensible for the tree-based splits.
+What's Inside the Pipeline
+The model looks at 10 customer features:
 
-### 3. Training Splitting Strategy
-* **The Implementation:** We initially split the training array down using a stratified 80/20 train-test split (`X_train_split`, `y_train_split`) to compute validation baselines. The pipeline hit a near-perfect metric array (1.00 Precision/Recall on test frames). Once verified, we refitted the entire pipeline object against the **whole training dataset (`X_train`, `y_train`) containing exactly 440,832 data rows** to ensure maximum pattern generalizability before final deployment.
+Age: Customer's age (strong predictor)
 
-### 4. Model Export & File Link Dowload Setup
-* **The Workflow:** We wrapped the fully trained state using `joblib.dump()` into a standalone file `final_customer_churn_model.pkl`. To pull it down to our local VS Code desktop environment seamlessly without fighting the Kaggle storage sidebar, we used `from IPython.display import FileLink` to generate a direct download route right inside the cell outputs.
+Gender: Mapped as Male=0, Female=1
 
----
+Tenure: Months they've been subscribed
 
-## 📊 Pipeline Data Architecture & Features
+Usage Frequency: Monthly service interactions
 
-The baseline architecture handles the following 10 structural customer metrics mapped inside a single automated data transformer layout:
+Support Calls: Number of tech support requests
 
-* **Age:** Numerical age of the customer (Highly correlated).
-* **Gender:** Binary feature mapped as `{'Male': 0, 'Female': 1}`.
-* **Tenure:** Number of continuous subscription months.
-* **Usage Frequency:** Number of times the customer interacted with the service per month.
-* **Support Calls:** Number of technical assist requests logged.
-* **Payment Delay:** Historical payment grace delays counted in days.
-* **Subscription Type:** Categorical tiers mapped hierarchically as `{'Premium': 1, 'Standard': 2, 'Basic': 3}`.
-* **Contract Length:** Temporal commitments mapped as `{'Monthly': 1, 'Quarterly': 6, 'Annual': 12}`.
-* **Total Spend:** Float representation of total historical transactional values.
-* **Last Interaction:** Days elapsed since the subscriber last utilized the core platform ecosystem.
+Payment Delay: Days late on payments
 
----
+Subscription Type: Premium=1, Standard=2, Basic=3
 
-## 🚀 Step-by-Step Local Deployment Guide
+Contract Length: Monthly=1, Quarterly=6, Annual=12
 
-1. Clone or extract this project setup into a clean folder on your local computer using VS Code.
-2. Download your generated model checkpoint file (`final_customer_churn_model.pkl`) from your Kaggle workspace output directory and drop it into the exact same folder where `churn_app.py` sits.
-3. Open up your VS Code terminal window and spin up the dependency stack:
-   ```bash
-   pip install -r requirements.txt
+Total Spend: Historical spending total
+
+Last Interaction: Days since last platform activity
+
+Running It Locally
+Download the model file (final_customer_churn_model.pkl) from your Kaggle workspace and place it in the same folder as churn_app.py
+
+Open the project in VS Code
+
+In the terminal, run:
+
+bash
+pip install -r requirements.txt
+Launch the Streamlit app:
+
+bash
+streamlit run churn_app.py
