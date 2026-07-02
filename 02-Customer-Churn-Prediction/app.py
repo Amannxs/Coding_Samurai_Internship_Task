@@ -12,16 +12,19 @@ st.set_page_config(page_title="Customer Churn Predictor", page_icon="📉", layo
 # ==========================================
 @st.cache_resource
 def load_churn_pipeline():
-    # Path to your downloaded .pkl file from Kaggle output
-    model_path = 'final_customer_churn_model.pkl'
+    # 💡 FIX: Yeh line app.py ka exact absolute directory path nikaal legi
+    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+    
+    # Aur ab hum path ko join kar denge
+    model_path = os.path.join(BASE_DIR, 'final_customer_churn_model.pkl')
     
     if os.path.exists(model_path):
         pipeline = joblib.load(model_path)
         return pipeline
     else:
-        st.error(f"⚠️ Model file '{model_path}' not found! Please place it in the same directory.")
+        # Debugging ke liye hum exact path screen par print karwa dete hain
+        st.error(f"⚠️ Model file not found at: {model_path}")
         return None
-
 pipeline = load_churn_pipeline()
 
 # ==========================================
