@@ -3,5 +3,5 @@ A collection of machine learning projects completed during my internship at Codi
 ### 🚀 Live Deployments
 
 
-| 🕵️‍♂️ Deepfake Image Detector | [Live Link](coding_samurai_internship_task ∙ main ∙ 01-House-Price-Prediction/app.py) |
+| 🕵️‍♂️ Deepfake Image Detector | [Live Link](https://codingsamuraiinternshiptask-01-house-price-prediction.streamlit.app/) |
 | 📉 Customer Churn Predictor | [Live Link](https://codingsamuraiinternshiptask-02-customer-churn-prediction.streamlit.app/) |
